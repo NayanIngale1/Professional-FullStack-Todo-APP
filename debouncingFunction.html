@@ -1,0 +1,48 @@
+<!-- debouncing function  -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Debouncing Function</title>
+  </head>
+  <style>
+    div {
+      margin: 30px auto;
+      width: fit-content;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 20px;
+    }
+  </style>
+  <body>
+    <div>
+      <button id="debounce">Debounce</button>
+    </div>
+  </body>
+</html>
+<script>
+  var button = document.getElementById("debounce");
+
+  function debounce(func, delay) {
+    let debounceTimer;
+    return function () {
+      if (debounceTimer) {
+        clearTimeout(debounceTimer);
+      }
+      debounceTimer = setTimeout(() => {
+        func();
+      }, delay);
+    };
+  }
+
+  button.addEventListener(
+    "click",
+    debounce(function () {
+      console.log("hello");
+      alert("Hello\nI am Executed in 2 seconds\nDebouncing .....yoooooo");
+    }, 2000)
+  );
+</script>
