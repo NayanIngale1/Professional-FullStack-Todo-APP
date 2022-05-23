@@ -1,0 +1,10 @@
+.body_container {
+  margin: 10px;
+  padding: 10px;
+  height: 100px;
+  width: 100%;
+}
+.App {
+  display: flex;
+  font-family: "Roboto", sans-serif;
+}
