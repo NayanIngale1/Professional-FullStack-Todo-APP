@@ -5,7 +5,7 @@ import "./App.css";
 import { Login } from "./Components/Login/Login";
 import { Route, Routes } from "react-router-dom";
 import Home from "./Components/Home/Home";
-import NewTask from "./Components/NewTask/NewTask";
+import {NewTask} from "./Components/NewTask/NewTask";
 
 function App() {
   return (

@@ -184,6 +184,7 @@ const Sidebar = () => {
                 <MenuItem
                   icon={<FiLogOut />}
                   onClick={() => {
+                    localStorage.removeItem("TodoUser");
                     dispatch(logOutUser());
                   }}
                 >

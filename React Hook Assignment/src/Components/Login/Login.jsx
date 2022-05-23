@@ -58,10 +58,10 @@ const MyLogin = () => {
       if (!data.error) {
         setFormData({});
 
-        
         enqueueSnackbar(`Welcome ${data.name}`, { variant: "success" });
         setTimeout(() => {
           dispatch(addUser(data));
+          localStorage.setItem("TodoUser", JSON.stringify(data));
           navigate("/");
         }, 3000);
       }
@@ -123,4 +123,3 @@ export const Login = () => {
 //   register link - https://masai-api-mocker.herokuapp.com/auth/register
 
 // login link - https://masai-api-mocker.herokuapp.com/auth/login
-    
