@@ -27,7 +27,7 @@ const MyLogin = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log(formData);
+    // console.log(formData);
 
     let res = await fetch("https://masai-api-mocker.herokuapp.com/auth/login", {
       method: "POST",
@@ -54,7 +54,7 @@ const MyLogin = () => {
         }
       ).then((res) => res.json());
 
-      console.log("data:", data);
+      // console.log("data:", data);
       if (!data.error) {
         setFormData({});
 

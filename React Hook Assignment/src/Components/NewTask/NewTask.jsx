@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./NewTask.css";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import {
@@ -19,11 +19,21 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch } from "react-redux";
 import { addTodo } from "../../Redux/Todo/action";
+import { addUser } from "../../Redux/User/action";
 
 const MyNewTask = () => {
+
+const dispatch = useDispatch();
+
+  useEffect(() => {
+    let user = JSON.parse(localStorage.getItem("TodoUser"));
+    if (user) {
+      dispatch(addUser(user));
+    }
+  }, []);
+
   const { enqueueSnackbar } = useSnackbar();
 
-  const dispatch = useDispatch();
   const [newTaskData, setNewTaskData] = useState({
     title: "",
     description: "",
@@ -72,7 +82,9 @@ const MyNewTask = () => {
   };
 
   const handleAddTodo = (e) => {
-    if (newTaskData.tags.length === 0) {
+    if (newTaskData.title.trim().length === 0) {
+      enqueueSnackbar("Title feild is empty", { variant: "error" });
+    } else if (newTaskData.tags.length === 0) {
       enqueueSnackbar("Atleast one tag required", { variant: "error" });
     } else {
       enqueueSnackbar("New Todo Creates Successfully", {
