@@ -34,7 +34,7 @@ import { logOutUser } from "../../Redux/User/action";
 
 const Sidebar = () => {
   //create initial menuCollapse state using useState hook
-  const [menuCollapse, setMenuCollapse] = useState(false);
+  const [menuCollapse, setMenuCollapse] = useState(true);
 
   const [activeProp, setActiveProp] = useState({
     home: true,
@@ -88,9 +88,9 @@ const Sidebar = () => {
                     official: false,
                     others: false,
                     all: false,
-                    add:false
+                    add: false,
                   });
-                  navigate("/")
+                  navigate("/");
                 }}
               >
                 Home

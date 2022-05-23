@@ -1,9 +1,19 @@
 .newtask_page {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  grid-gap: 15px;
+  grid-gap: 20px;
 }
 
 .newTask_page_section {
-  border: 1px solid red;
+  box-shadow: rgba(178, 178, 178, 0.35) 0px 5px 5px;
+  border: 1px solid rgb(243, 243, 243);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.small_flex_box {
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
