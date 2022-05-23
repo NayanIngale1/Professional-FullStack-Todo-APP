@@ -1,5 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
 import "./NewTask.css";
+import { SnackbarProvider, useSnackbar } from "notistack";
 import {
   Box,
   Button,
@@ -16,8 +17,71 @@ import {
 } from "@mui/material";
 
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useDispatch } from "react-redux";
+import { addTodo } from "../../Redux/Todo/action";
 
-const NewTask = () => {
+const MyNewTask = () => {
+  const { enqueueSnackbar } = useSnackbar();
+
+  const dispatch = useDispatch();
+  const [newTaskData, setNewTaskData] = useState({
+    title: "",
+    description: "",
+    status: "todo",
+    subTasks: [],
+    tags: [],
+  });
+
+  const [subTask, setSubtask] = useState({
+    title: "",
+    status: false,
+  });
+  const [subTaskArr, setSubtaskArr] = useState([]);
+  const [tags, setTags] = useState([]);
+
+  const handleNewTask = (e) => {
+    setNewTaskData({
+      ...newTaskData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleSubaskArr = (e) => {
+    setSubtaskArr([...subTaskArr, subTask]);
+    setNewTaskData({
+      ...newTaskData,
+      subTasks: [...subTaskArr, subTask],
+    });
+  };
+  const handleTags = (e) => {
+    // console.log(e);
+    if (e.target.checked) {
+      if (tags.includes(e.target.value) == false) {
+        setTags([...tags, e.target.value]);
+        setNewTaskData({
+          ...newTaskData,
+          tags: [...tags, e.target.value],
+        });
+      }
+    } else {
+      setTags(tags.filter((tag) => tag != e.target.value));
+      setNewTaskData({
+        ...newTaskData,
+        tags: tags.filter((tag) => tag != e.target.value),
+      });
+    }
+  };
+
+  const handleAddTodo = (e) => {
+    if (newTaskData.tags.length === 0) {
+      enqueueSnackbar("Atleast one tag required", { variant: "error" });
+    } else {
+      enqueueSnackbar("New Todo Creates Successfully", {
+        variant: "success",
+      });
+      dispatch(addTodo(newTaskData));
+    }
+  };
+
   return (
     <>
       {" "}
@@ -32,7 +96,7 @@ const NewTask = () => {
             variant="outlined"
             size="small"
             name="title"
-            onChange={(e) => handleChange(e)}
+            onChange={(e) => handleNewTask(e)}
           />
           <TextField
             id="outlined-multiline-static"
@@ -40,6 +104,7 @@ const NewTask = () => {
             multiline
             rows={4}
             name="description"
+            onChange={(e) => handleNewTask(e)}
           />
         </div>
         <div className="newTask_page_section">
@@ -50,19 +115,34 @@ const NewTask = () => {
               variant="outlined"
               size="small"
               name="title"
-              onChange={(e) => handleChange(e)}
+              onChange={(e) =>
+                setSubtask({
+                  title: e.target.value,
+                  status: false,
+                })
+              }
             />
-            <Button variant="contained" onClick={(e) => {}}>
+            <Button
+              variant="contained"
+              onClick={(e) => {
+                handleSubaskArr(e);
+              }}
+            >
               {" "}
               Add{" "}
             </Button>
           </Box>
-          <Box component="div" display="flex" alignItems="center">
-            <Checkbox />
-            <Typography component="p">Sign In</Typography>
-            <IconButton aria-label="delete">
-              <DeleteIcon color="error" />
-            </IconButton>
+
+          <Box component="div">
+            {subTaskArr.map((task) => (
+              <Box component="div" display="flex" alignItems="center">
+                <Checkbox />
+                <Typography component="p">{task.title}</Typography>
+                <IconButton aria-label="delete">
+                  <DeleteIcon color="error" />
+                </IconButton>
+              </Box>
+            ))}
           </Box>
         </div>
         <div className="newTask_page_section">
@@ -74,7 +154,8 @@ const NewTask = () => {
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
                 defaultValue="todo"
-                name="radio-buttons-group"
+                name="status"
+                onChange={(e) => handleNewTask(e)}
               >
                 <FormControlLabel
                   value="todo"
@@ -100,15 +181,35 @@ const NewTask = () => {
                 Todo Tags
               </FormLabel>
               <FormControlLabel
-                control={<Checkbox defaultChecked />}
+                control={<Checkbox />}
                 label="Official"
+                name="tag"
+                value="Official"
+                onChange={(e) => handleTags(e)}
               />
-              <FormControlLabel control={<Checkbox />} label="Personal" />
-              <FormControlLabel control={<Checkbox />} label="Others" />
+              <FormControlLabel
+                control={<Checkbox />}
+                label="Personal"
+                name="tag"
+                value="Personal"
+                onChange={(e) => handleTags(e)}
+              />
+              <FormControlLabel
+                control={<Checkbox />}
+                label="Others"
+                name="tag"
+                value="Others"
+                onChange={(e) => handleTags(e)}
+              />
             </FormGroup>
           </Box>
         </div>
-        <Button variant="contained" onClick={(e) => {}}>
+        <Button
+          variant="contained"
+          onClick={(e) => {
+            handleAddTodo(e);
+          }}
+        >
           <h2>Add Todo</h2>
         </Button>
       </div>
@@ -116,4 +217,10 @@ const NewTask = () => {
   );
 };
 
-export default NewTask;
+export const NewTask = () => {
+  return (
+    <SnackbarProvider maxSnack={3}>
+      <MyNewTask />
+    </SnackbarProvider>
+  );
+};
