@@ -1,0 +1,30 @@
+{
+  "users": [],
+  "todos": [
+    {
+      "title": "My first Todo",
+      "description": "This is my First todo. Testing for the application. If you want you can try it.",
+      "status": "progress",
+      "subTasks": [
+        {
+          "title": "testing for tags",
+          "status": false
+        },
+        {
+          "title": "testing for status",
+          "status": false
+        },
+        {
+          "title": "testing for filter",
+          "status": false
+        }
+      ],
+      "tags": [
+        "Personal",
+        "Official"
+      ],
+      "username": "nayaningale15@gmail.com",
+      "id": 1
+    }
+  ]
+}

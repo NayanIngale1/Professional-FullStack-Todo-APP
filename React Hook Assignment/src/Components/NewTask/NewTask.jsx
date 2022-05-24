@@ -17,19 +17,22 @@ import {
 } from "@mui/material";
 
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useDispatch } from "react-redux";
-import { addTodo } from "../../Redux/Todo/action";
+import { useDispatch, useSelector } from "react-redux";
+import { addTodo, setLoading } from "../../Redux/Todo/action";
 import { addUser } from "../../Redux/User/action";
+import Loading from "../Home/Loading";
 
 const MyNewTask = () => {
+  const dispatch = useDispatch();
 
-const dispatch = useDispatch();
+  const user = useSelector((state) => state.user);
 
   useEffect(() => {
     let user = JSON.parse(localStorage.getItem("TodoUser"));
     if (user) {
       dispatch(addUser(user));
     }
+    dispatch(setLoading(false));
   }, []);
 
   const { enqueueSnackbar } = useSnackbar();
@@ -46,7 +49,7 @@ const dispatch = useDispatch();
     title: "",
     status: false,
   });
-  const [subTaskArr, setSubtaskArr] = useState([]);
+
   const [tags, setTags] = useState([]);
 
   const handleNewTask = (e) => {
@@ -55,12 +58,15 @@ const dispatch = useDispatch();
       [e.target.name]: e.target.value,
     });
   };
-  const handleSubaskArr = (e) => {
-    setSubtaskArr([...subTaskArr, subTask]);
+  const handleSubTaskArr = (e) => {
+    if (subTask.title.length === 0) {
+      return;
+    }
     setNewTaskData({
       ...newTaskData,
-      subTasks: [...subTaskArr, subTask],
+      subTasks: [...newTaskData.subTasks, subTask],
     });
+    setSubtask("");
   };
   const handleTags = (e) => {
     // console.log(e);
@@ -87,27 +93,51 @@ const dispatch = useDispatch();
     } else if (newTaskData.tags.length === 0) {
       enqueueSnackbar("Atleast one tag required", { variant: "error" });
     } else {
-      enqueueSnackbar("New Todo Creates Successfully", {
-        variant: "success",
-      });
+      const TaskData = {
+        ...newTaskData,
+        username: user.user.email,
+      };
+
+      let res = fetch("http://localhost:8080/todos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(TaskData),
+      })
+        .then((res) => res.json())
+        .then((res) =>
+          enqueueSnackbar("New Todo Creates Successfully", {
+            variant: "success",
+          })
+        );
+
       dispatch(addTodo(newTaskData));
+      setNewTaskData({
+        title: "",
+        description: "",
+        status: "todo",
+        subTasks: [],
+        tags: [],
+      });
     }
   };
 
   return (
     <>
-      {" "}
+      <Loading />{" "}
       <Typography variant="h4" component="p" m="10px auto">
         Add New Todo
       </Typography>
       <div className="newtask_page">
-        <div className="newTask_page_section">
+        <div id="newTask_page_section">
           <TextField
             id="outlined-basic"
             label="Todo title"
             variant="outlined"
             size="small"
             name="title"
+            value={newTaskData.title}
             onChange={(e) => handleNewTask(e)}
           />
           <TextField
@@ -116,10 +146,11 @@ const dispatch = useDispatch();
             multiline
             rows={4}
             name="description"
+            value={newTaskData.description}
             onChange={(e) => handleNewTask(e)}
           />
         </div>
-        <div className="newTask_page_section">
+        <div id="newTask_page_section">
           <Box component="div" className="small_flex_box">
             <TextField
               id="outlined-basic"
@@ -137,7 +168,7 @@ const dispatch = useDispatch();
             <Button
               variant="contained"
               onClick={(e) => {
-                handleSubaskArr(e);
+                handleSubTaskArr(e);
               }}
             >
               {" "}
@@ -146,7 +177,7 @@ const dispatch = useDispatch();
           </Box>
 
           <Box component="div">
-            {subTaskArr.map((task) => (
+            {newTaskData.subTasks.map((task) => (
               <Box component="div" display="flex" alignItems="center">
                 <Checkbox />
                 <Typography component="p">{task.title}</Typography>
@@ -157,7 +188,7 @@ const dispatch = useDispatch();
             ))}
           </Box>
         </div>
-        <div className="newTask_page_section">
+        <div id="newTask_page_section">
           <Box component="div" display="flex" alignItems="center">
             <FormControl>
               <FormLabel id="demo-radio-buttons-group-label">

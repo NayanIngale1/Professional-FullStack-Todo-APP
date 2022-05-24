@@ -1,0 +1,9 @@
+#outer_summary_box {
+  width: 220px;
+  justify-content: space-between;
+}
+
+#loading {
+  width: 100px;
+  font-weight: 900;
+}

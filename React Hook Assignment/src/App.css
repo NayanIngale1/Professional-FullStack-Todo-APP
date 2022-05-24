@@ -1,11 +1,13 @@
 .body_container {
   margin: 10px;
   padding: 10px 10px;
-  overflow-y: auto;
-  height: 100vh;
+  overflow: auto;  
   width: 100%;
 }
+
 .App {
   display: flex;
   font-family: "Roboto", sans-serif;
+  height: 100vh;
+  background-color:rgb(247, 247, 247);
 }

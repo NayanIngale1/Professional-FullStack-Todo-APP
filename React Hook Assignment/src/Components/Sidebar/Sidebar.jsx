@@ -109,6 +109,7 @@ const Sidebar = () => {
                         others: false,
                         all: true,
                       });
+                      navigate("/alltodos");
                     }}
                   >
                     ALL
@@ -124,6 +125,7 @@ const Sidebar = () => {
                         others: false,
                         all: false,
                       });
+                      navigate("/personaltodos");
                     }}
                   >
                     Personal
@@ -139,8 +141,9 @@ const Sidebar = () => {
                         others: false,
                         all: false,
                       });
+                      navigate("/officialtodos");
                     }}
-                  >
+                    >
                     Ofiicial
                   </MenuItem>
                   <MenuItem
@@ -154,6 +157,7 @@ const Sidebar = () => {
                         others: true,
                         all: false,
                       });
+                      navigate("/othertodos");
                     }}
                   >
                     Others
