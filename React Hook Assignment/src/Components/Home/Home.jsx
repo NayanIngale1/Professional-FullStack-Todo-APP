@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import "./Home.css";
 import { useDispatch, useSelector } from "react-redux";
 import { addUser } from "../../Redux/User/action";
-import { Stack, Button, CircularProgress } from "@mui/material";
-import { addAllTodo, setLoading } from "../../Redux/Todo/action";
+import { Stack, Button, CircularProgress, Typography } from "@mui/material";
+import { addAllTodo, setLoading, getData } from "../../Redux/Todo/action";
 import Loading from "./Loading";
 
 const Home = () => {
@@ -27,17 +27,8 @@ const Home = () => {
       dispatch(addUser(user));
     }
 
-    getData();
+    dispatch(getData());
   }, []);
-
-  async function getData() {
-    let res = await fetch(" http://localhost:8080/todos").then((res) =>
-      res.json()
-    );
-    console.log("res:", res);
-
-    dispatch(addAllTodo(res));
-  }
 
   return (
     <>
@@ -45,65 +36,70 @@ const Home = () => {
       <div>
         <h1>Welcome To Home {user?.user?.name?.split(" ")[0]} </h1>
       </div>
-      {loading == false && (
-        <Stack direction="column" alignItems="flex-start" spacing={2} p={2}>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-            spacing={2}
-            id="outer_summary_box"
-          >
-            <Button variant="outlined" color="warning" size="large">
-              All
-            </Button>
-            <Button variant="contained" color="primary" size="large">
-              {allTodos.todos.length}
-            </Button>
+      {loading == false && user.loggedin && (
+        <>
+          <Typography variant="h5" color="text.secondary" gutterBottom>
+            Todos Summary :
+          </Typography>
+          <Stack direction="column" alignItems="flex-start" spacing={2} p={2}>
+            <Stack
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2}
+              id="outer_summary_box"
+            >
+              <Button variant="outlined" color="warning" size="large">
+                All
+              </Button>
+              <Button variant="contained" color="primary" size="large">
+                {allTodos.todos.length}
+              </Button>
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2}
+              id="outer_summary_box"
+            >
+              <Button variant="outlined" color="warning" size="large">
+                Personal
+              </Button>
+              <Button variant="contained" color="primary" size="large">
+                {allTodos.personalTodos.length}
+              </Button>
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2}
+              id="outer_summary_box"
+            >
+              <Button variant="outlined" color="warning" size="large">
+                Officical
+              </Button>
+              <Button variant="contained" color="primary" size="large">
+                {allTodos.officialTodos.length}
+              </Button>
+            </Stack>
+            <Stack
+              direction="row"
+              justifyContent="center"
+              alignItems="center"
+              spacing={2}
+              id="outer_summary_box"
+            >
+              <Button variant="outlined" color="warning" size="large">
+                Others
+              </Button>
+              <Button variant="contained" color="primary" size="large">
+                {allTodos.otherTodos.length}
+              </Button>
+            </Stack>
           </Stack>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-            spacing={2}
-            id="outer_summary_box"
-          >
-            <Button variant="outlined" color="warning" size="large">
-              Personal
-            </Button>
-            <Button variant="contained" color="primary" size="large">
-              {allTodos.personalTodos.length}
-            </Button>
-          </Stack>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-            spacing={2}
-            id="outer_summary_box"
-          >
-            <Button variant="outlined" color="warning" size="large">
-              Officical
-            </Button>
-            <Button variant="contained" color="primary" size="large">
-              {allTodos.officialTodos.length}
-            </Button>
-          </Stack>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-            spacing={2}
-            id="outer_summary_box"
-          >
-            <Button variant="outlined" color="warning" size="large">
-              Others
-            </Button>
-            <Button variant="contained" color="primary" size="large">
-              {allTodos.otherTodos.length}
-            </Button>
-          </Stack>
-        </Stack>
+        </>
       )}
     </>
   );

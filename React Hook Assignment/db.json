@@ -25,6 +25,27 @@
       ],
       "username": "nayaningale15@gmail.com",
       "id": 1
+    },
+    {
+      "title": "Second Sample",
+      "description": "this is testing 2 phase, here I am updated A small code. lets see what happened",
+      "status": "todo",
+      "subTasks": [
+        {
+          "title": "appllied middleware",
+          "status": false
+        },
+        {
+          "title": "testing of react-thunk",
+          "status": false
+        }
+      ],
+      "tags": [
+        "Personal",
+        "Others"
+      ],
+      "username": "nayaningale15@gmail.com",
+      "id": 2
     }
   ]
 }

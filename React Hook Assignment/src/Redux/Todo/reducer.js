@@ -16,26 +16,25 @@ export const todoReducer = (state = init, action) => {
         ...state,
         todos: [...state.todos, payload],
         loading: false,
-        personalTodos: [...state.todos,payload].filter((td) => td.tags.includes("Personal")),
-        otherTodos: [...state.todos,payload].filter((td) => td.tags.includes("Official")),
-        officialTodos: [...state.todos,payload].filter((td) => td.tags.includes("Others"))
+        personalTodos: [...state.todos, payload].filter((td) =>
+          td.tags.includes("Personal")
+        ),
+        otherTodos: [...state.todos, payload].filter((td) =>
+          td.tags.includes("Others")
+        ),
+        officialTodos: [...state.todos, payload].filter((td) =>
+          td.tags.includes("Official")
+        ),
       };
     
-    "Official", "Personal", "Others";
     case ADD_ALL_TODO:
       return {
         ...state,
         todos: payload,
         loading: false,
-        personalTodos:  payload.filter((td) =>
-          td.tags.includes("Personal")
-        ),
-        otherTodos:  payload.filter((td) =>
-          td.tags.includes("Official")
-        ),
-        officialTodos: payload.filter((td) =>
-          td.tags.includes("Others")
-        ),
+        personalTodos: payload.filter((td) => td.tags.includes("Personal")),
+        otherTodos: payload.filter((td) => td.tags.includes("Others")),
+        officialTodos: payload.filter((td) => td.tags.includes("Official")),
       };
     case SET_LOADING:
       return {

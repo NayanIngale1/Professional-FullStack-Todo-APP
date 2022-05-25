@@ -21,3 +21,13 @@ export const setLoading = (value) => {
     payload: value,
   };
 };
+
+/// this is gonna action creator which return a function which will have access to dispath function
+
+export const getData = () => (dispatch) => {
+  dispatch(setLoading(true));
+
+  fetch(" http://localhost:8080/todos")
+    .then((res) => res.json())
+    .then((res) => dispatch(addAllTodo(res)));
+};

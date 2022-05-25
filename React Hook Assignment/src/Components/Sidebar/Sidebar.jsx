@@ -143,8 +143,8 @@ const Sidebar = () => {
                       });
                       navigate("/officialtodos");
                     }}
-                    >
-                    Ofiicial
+                  >
+                    Official
                   </MenuItem>
                   <MenuItem
                     active={activeProp.others}

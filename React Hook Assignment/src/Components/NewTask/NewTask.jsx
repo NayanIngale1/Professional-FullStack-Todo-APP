@@ -18,11 +18,12 @@ import {
 
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
-import { addTodo, setLoading } from "../../Redux/Todo/action";
+import { addTodo, setLoading, getData } from "../../Redux/Todo/action";
 import { addUser } from "../../Redux/User/action";
 import Loading from "../Home/Loading";
 
 const MyNewTask = () => {
+  
   const dispatch = useDispatch();
 
   const user = useSelector((state) => state.user);
@@ -112,7 +113,7 @@ const MyNewTask = () => {
           })
         );
 
-      dispatch(addTodo(newTaskData));
+      dispatch(getData());
       setNewTaskData({
         title: "",
         description: "",
