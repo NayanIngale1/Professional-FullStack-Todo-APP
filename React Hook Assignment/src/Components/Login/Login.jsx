@@ -63,7 +63,7 @@ const MyLogin = () => {
           dispatch(addUser(data));
           localStorage.setItem("TodoUser", JSON.stringify(data));
           navigate("/");
-        }, 3000);
+        }, 1500);
       }
     }
 

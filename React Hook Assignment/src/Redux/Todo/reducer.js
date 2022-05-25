@@ -32,9 +32,9 @@ export const todoReducer = (state = init, action) => {
         ...state,
         todos: payload,
         loading: false,
-        personalTodos: payload.filter((td) => td.tags.includes("Personal")),
-        otherTodos: payload.filter((td) => td.tags.includes("Others")),
-        officialTodos: payload.filter((td) => td.tags.includes("Official")),
+        personalTodos: payload.filter((td) => td.tags.Personal === true ),
+        otherTodos: payload.filter((td) => td.tags.Others === true ),
+        officialTodos: payload.filter((td) => td.tags.Official ===true )
       };
     case SET_LOADING:
       return {

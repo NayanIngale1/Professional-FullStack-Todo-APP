@@ -4,6 +4,7 @@
   top: 0;
   left: 0;
 }
+
 #sidebar .pro-sidebar {
   height: 100vh;
 }
@@ -16,7 +17,7 @@
   border-radius: 50%;
   font-weight: bold;
   font-size: 22px;
-  top: 55px;
+  top: 80px;
   cursor: pointer;
 }
 #sidebar .pro-sidebar {
@@ -34,9 +35,12 @@
 #sidebar .pro-sidebar-inner .pro-sidebar-layout {
   overflow-y: hidden;
 }
+#sidebar .pro-sidebar-inner .pro-sidebar-layout .logotext {
+  height: 70px;
+}
 #sidebar .pro-sidebar-inner .pro-sidebar-layout .logotext p {
   font-size: 20px;
-  padding: 0 20px;
+  padding: 10px 20px;
   color: #000;
   font-weight: bold;
 }

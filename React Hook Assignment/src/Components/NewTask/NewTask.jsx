@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useReducer } from "react";
+import { v4 as uuid } from "uuid";
 import "./NewTask.css";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import {
@@ -15,19 +16,97 @@ import {
   RadioGroup,
   FormGroup,
 } from "@mui/material";
-
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch, useSelector } from "react-redux";
 import { addTodo, setLoading, getData } from "../../Redux/Todo/action";
 import { addUser } from "../../Redux/User/action";
 import Loading from "../Home/Loading";
 
+const initialState = {
+  title: "",
+  description: "",
+  subTasks: [],
+  status: "todo",
+  tags: { Official: false, Personal: false, Others: false },
+  date: "",
+};
+
+const reducer = (state, { type, payload }) => {
+  switch (type) {
+    case "UPDATE_TITLE":
+      return { ...state, title: payload };
+    case "UPDATE_DESCRIPTION":
+      return { ...state, description: payload };
+    case "UPDATE_STATUS":
+      return { ...state, status: payload };
+    case "UPDATE_TAGS":
+      return { ...state, tags: { ...state.tags, ...payload } };
+    case "UPDATE_DATE":
+      return { ...state, date: payload };
+    case "UPDATE_SUBTASKS":
+      return { ...state, subTasks: [...state.subTasks, payload] };
+    case "TOGGLE_SUBTASKS":
+      const subtasksAfterToggle = state.subTasks.map((ele) =>
+        ele.id === payload.id ? { ...ele, status: payload.status } : ele
+      );
+      return { ...state, subTasks: subtasksAfterToggle };
+    case "DELETE_SUBTASK":
+      const subtaskAfterDelete = state.subTasks.filter(
+        (el) => el.id !== payload
+      );
+
+      return { ...state, subTasks: subtaskAfterDelete };
+    case "RESET":
+      return { ...initialState };
+    default:
+      throw new Error("Please give proper action object");
+  }
+};
+
 const MyNewTask = () => {
-  
-  const dispatch = useDispatch();
+  const [state, localDispatch] = useReducer(reducer, initialState);
+  // console.log("state:", state);
+  const { enqueueSnackbar } = useSnackbar();
+
+  const [sub, setSub] = useState("");
+
+  const { title, description, subTasks, status, tags, date } = state;
+
+  const { Official, Personal, Others } = tags;
 
   const user = useSelector((state) => state.user);
 
+  const createNewTask = () => {
+    if (state.title.trim().length === 0) {
+      enqueueSnackbar("Title feild is empty", { variant: "error" });
+    } else if (
+      state.tags.Official == false &&
+      state.tags.Personal == false &&
+      state.tags.Others == false
+    ) {
+      enqueueSnackbar("Atleast one tag required", { variant: "error" });
+    } else {
+      const payload = {
+        ...state,
+        username: user.user.email,
+      };
+      fetch("http://localhost:8080/todos", {
+        method: "POST",
+        body: JSON.stringify(payload),
+        headers: { "Content-Type": "application/json" },
+      })
+        .then(() => dispatch(getData(user.user.email)))
+        .then(() => localDispatch({ type: "RESET" }))
+        .then((res) =>
+          enqueueSnackbar("New Todo Creates Successfully", {
+            variant: "success",
+          })
+        );
+    }
+  };
+
+  // ----
+  const dispatch = useDispatch();
   useEffect(() => {
     let user = JSON.parse(localStorage.getItem("TodoUser"));
     if (user) {
@@ -35,94 +114,6 @@ const MyNewTask = () => {
     }
     dispatch(setLoading(false));
   }, []);
-
-  const { enqueueSnackbar } = useSnackbar();
-
-  const [newTaskData, setNewTaskData] = useState({
-    title: "",
-    description: "",
-    status: "todo",
-    subTasks: [],
-    tags: [],
-  });
-
-  const [subTask, setSubtask] = useState({
-    title: "",
-    status: false,
-  });
-
-  const [tags, setTags] = useState([]);
-
-  const handleNewTask = (e) => {
-    setNewTaskData({
-      ...newTaskData,
-      [e.target.name]: e.target.value,
-    });
-  };
-  const handleSubTaskArr = (e) => {
-    if (subTask.title.length === 0) {
-      return;
-    }
-    setNewTaskData({
-      ...newTaskData,
-      subTasks: [...newTaskData.subTasks, subTask],
-    });
-    setSubtask("");
-  };
-  const handleTags = (e) => {
-    // console.log(e);
-    if (e.target.checked) {
-      if (tags.includes(e.target.value) == false) {
-        setTags([...tags, e.target.value]);
-        setNewTaskData({
-          ...newTaskData,
-          tags: [...tags, e.target.value],
-        });
-      }
-    } else {
-      setTags(tags.filter((tag) => tag != e.target.value));
-      setNewTaskData({
-        ...newTaskData,
-        tags: tags.filter((tag) => tag != e.target.value),
-      });
-    }
-  };
-
-  const handleAddTodo = (e) => {
-    if (newTaskData.title.trim().length === 0) {
-      enqueueSnackbar("Title feild is empty", { variant: "error" });
-    } else if (newTaskData.tags.length === 0) {
-      enqueueSnackbar("Atleast one tag required", { variant: "error" });
-    } else {
-      const TaskData = {
-        ...newTaskData,
-        username: user.user.email,
-      };
-
-      let res = fetch("http://localhost:8080/todos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(TaskData),
-      })
-        .then((res) => res.json())
-        .then((res) =>
-          enqueueSnackbar("New Todo Creates Successfully", {
-            variant: "success",
-          })
-        );
-
-      dispatch(getData());
-      setNewTaskData({
-        title: "",
-        description: "",
-        status: "todo",
-        subTasks: [],
-        tags: [],
-      });
-    }
-  };
 
   return (
     <>
@@ -138,17 +129,38 @@ const MyNewTask = () => {
             variant="outlined"
             size="small"
             name="title"
-            value={newTaskData.title}
-            onChange={(e) => handleNewTask(e)}
+            value={title}
+            onChange={(e) =>
+              localDispatch({ type: "UPDATE_TITLE", payload: e.target.value })
+            }
           />
+          <FormLabel>
+            Select Date : <br />
+            <input
+              id="datePicker"
+              type="date"
+              value={date}
+              onChange={(e) => {
+                localDispatch({
+                  type: "UPDATE_DATE",
+                  payload: e.target.value,
+                });
+              }}
+            />
+          </FormLabel>
           <TextField
             id="outlined-multiline-static"
             label="Description"
             multiline
             rows={4}
             name="description"
-            value={newTaskData.description}
-            onChange={(e) => handleNewTask(e)}
+            value={description}
+            onChange={(e) =>
+              localDispatch({
+                type: "UPDATE_DESCRIPTION",
+                payload: e.target.value,
+              })
+            }
           />
         </div>
         <div id="newTask_page_section">
@@ -159,17 +171,22 @@ const MyNewTask = () => {
               variant="outlined"
               size="small"
               name="title"
-              onChange={(e) =>
-                setSubtask({
-                  title: e.target.value,
-                  status: false,
-                })
-              }
+              value={sub}
+              onChange={(e) => {
+                setSub(e.target.value);
+              }}
             />
             <Button
               variant="contained"
-              onClick={(e) => {
-                handleSubTaskArr(e);
+              onClick={() => {
+                const payload = {
+                  id: uuid(),
+                  title: sub,
+                  status: false,
+                };
+
+                localDispatch({ type: "UPDATE_SUBTASKS", payload });
+                setSub("");
               }}
             >
               {" "}
@@ -178,12 +195,33 @@ const MyNewTask = () => {
           </Box>
 
           <Box component="div">
-            {newTaskData.subTasks.map((task) => (
-              <Box component="div" display="flex" alignItems="center">
-                <Checkbox />
+            {subTasks.map((task) => (
+              <Box
+                component="div"
+                display="flex"
+                alignItems="center"
+                key={task.id}
+              >
+                <Checkbox
+                  checked={task.status}
+                  onChange={(e) =>
+                    localDispatch({
+                      type: "TOGGLE_SUBTASKS",
+                      payload: { id: task.id, status: e.target.checked },
+                    })
+                  }
+                />
                 <Typography component="p">{task.title}</Typography>
                 <IconButton aria-label="delete">
-                  <DeleteIcon color="error" />
+                  <DeleteIcon
+                    color="error"
+                    onClick={() =>
+                      localDispatch({
+                        type: "DELETE_SUBTASK",
+                        payload: task.id,
+                      })
+                    }
+                  />
                 </IconButton>
               </Box>
             ))}
@@ -197,24 +235,31 @@ const MyNewTask = () => {
               </FormLabel>
               <RadioGroup
                 aria-labelledby="demo-radio-buttons-group-label"
-                defaultValue="todo"
                 name="status"
-                onChange={(e) => handleNewTask(e)}
+                onChange={(e) => {
+                  localDispatch({
+                    type: "UPDATE_STATUS",
+                    payload: e.target.value,
+                  });
+                }}
               >
                 <FormControlLabel
                   value="todo"
                   control={<Radio />}
                   label="Todo"
+                  checked={status === "todo"}
                 />
                 <FormControlLabel
                   value="progress"
                   control={<Radio />}
                   label="In Progress"
+                  checked={status === "progress"}
                 />
                 <FormControlLabel
                   value="done"
                   control={<Radio />}
                   label="Done"
+                  checked={status === "done"}
                 />
               </RadioGroup>
             </FormControl>
@@ -229,31 +274,45 @@ const MyNewTask = () => {
                 label="Official"
                 name="tag"
                 value="Official"
-                onChange={(e) => handleTags(e)}
+                checked={Official}
+                onChange={(e) => {
+                  localDispatch({
+                    type: "UPDATE_TAGS",
+                    payload: { Official: e.target.checked },
+                  });
+                }}
               />
               <FormControlLabel
                 control={<Checkbox />}
                 label="Personal"
                 name="tag"
                 value="Personal"
-                onChange={(e) => handleTags(e)}
+                checked={Personal}
+                onChange={(e) => {
+                  localDispatch({
+                    type: "UPDATE_TAGS",
+                    payload: { Personal: e.target.checked },
+                  });
+                }}
               />
               <FormControlLabel
                 control={<Checkbox />}
                 label="Others"
                 name="tag"
                 value="Others"
-                onChange={(e) => handleTags(e)}
+                checked={Others}
+                onChange={(e) => {
+                  localDispatch({
+                    type: "UPDATE_TAGS",
+                    payload: { Others: e.target.checked },
+                  });
+                }}
               />
             </FormGroup>
           </Box>
         </div>
-        <Button
-          variant="contained"
-          onClick={(e) => {
-            handleAddTodo(e);
-          }}
-        >
+
+        <Button variant="contained" onClick={createNewTask}>
           <h2>Add Todo</h2>
         </Button>
       </div>

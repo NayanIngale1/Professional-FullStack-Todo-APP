@@ -27,7 +27,7 @@ const Home = () => {
       dispatch(addUser(user));
     }
 
-    dispatch(getData());
+    dispatch(getData(user.email));
   }, []);
 
   return (

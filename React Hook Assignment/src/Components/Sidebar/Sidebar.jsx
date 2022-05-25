@@ -62,11 +62,11 @@ const Sidebar = () => {
       <div id="sidebar">
         {/* collapsed props to change menu size using menucollapse state */}
         <ProSidebar collapsed={menuCollapse}>
-          <SidebarHeader>
+          <SidebarHeader id="sidebarHeader">
             <div className="logotext">
               {/* small and big change using menucollapse state */}
               {user.loggedin ? (
-                <p>{menuCollapse ? user.user.username : user.user.name} </p>
+                <p>{user.user.name} </p>
               ) : (
                 <p>{menuCollapse ? "TODO" : "TODO APP"}</p>
               )}
@@ -96,109 +96,119 @@ const Sidebar = () => {
               >
                 Home
               </MenuItem>
-              {user.loggedin && (
-                <>
-                  <MenuItem
-                    active={activeProp.all}
-                    icon={<FaList />}
-                    onClick={() => {
-                      setActiveProp({
-                        home: false,
-                        personal: false,
-                        official: false,
-                        others: false,
-                        all: true,
-                      });
-                      navigate("/alltodos");
-                    }}
-                  >
-                    ALL
-                  </MenuItem>
-                  <MenuItem
-                    active={activeProp.personal}
-                    icon={<FaRegHeart />}
-                    onClick={() => {
-                      setActiveProp({
-                        home: false,
-                        personal: true,
-                        official: false,
-                        others: false,
-                        all: false,
-                      });
-                      navigate("/personaltodos");
-                    }}
-                  >
-                    Personal
-                  </MenuItem>
-                  <MenuItem
-                    active={activeProp.official}
-                    icon={<AdfScannerOutlinedIcon />}
-                    onClick={() => {
-                      setActiveProp({
-                        home: false,
-                        personal: false,
-                        official: true,
-                        others: false,
-                        all: false,
-                      });
-                      navigate("/officialtodos");
-                    }}
-                  >
-                    Official
-                  </MenuItem>
-                  <MenuItem
-                    active={activeProp.others}
-                    icon={<FiGrid />}
-                    onClick={() => {
-                      setActiveProp({
-                        home: false,
-                        personal: false,
-                        official: false,
-                        others: true,
-                        all: false,
-                      });
-                      navigate("/othertodos");
-                    }}
-                  >
-                    Others
-                  </MenuItem>
-                  <MenuItem
-                    active={activeProp.add}
-                    icon={<RiPencilLine />}
-                    onClick={() => {
-                      setActiveProp({
-                        home: false,
-                        personal: false,
-                        official: false,
-                        others: false,
-                        add: true,
-                        all: false,
-                      });
-                      navigate("/newtask");
-                    }}
-                  >
-                    Add Task
-                  </MenuItem>
-                </>
-              )}
+
+              <MenuItem
+                active={activeProp.all}
+                icon={<FaList />}
+                onClick={() => {
+                  setActiveProp({
+                    home: false,
+                    personal: false,
+                    official: false,
+                    others: false,
+                    all: true,
+                  });
+                  navigate("/alltodos");
+                }}
+              >
+                ALL
+              </MenuItem>
+              <MenuItem
+                active={activeProp.personal}
+                icon={<FaRegHeart />}
+                onClick={() => {
+                  setActiveProp({
+                    home: false,
+                    personal: true,
+                    official: false,
+                    others: false,
+                    all: false,
+                  });
+                  navigate("/personaltodos");
+                }}
+              >
+                Personal
+              </MenuItem>
+              <MenuItem
+                active={activeProp.official}
+                icon={<AdfScannerOutlinedIcon />}
+                onClick={() => {
+                  setActiveProp({
+                    home: false,
+                    personal: false,
+                    official: true,
+                    others: false,
+                    all: false,
+                  });
+                  navigate("/officialtodos");
+                }}
+              >
+                Official
+              </MenuItem>
+              <MenuItem
+                active={activeProp.others}
+                icon={<FiGrid />}
+                onClick={() => {
+                  setActiveProp({
+                    home: false,
+                    personal: false,
+                    official: false,
+                    others: true,
+                    all: false,
+                  });
+                  navigate("/othertodos");
+                }}
+              >
+                Others
+              </MenuItem>
+              <MenuItem
+                active={activeProp.add}
+                icon={<RiPencilLine />}
+                onClick={() => {
+                  setActiveProp({
+                    home: false,
+                    personal: false,
+                    official: false,
+                    others: false,
+                    add: true,
+                    all: false,
+                  });
+                  navigate("/newtask");
+                }}
+              >
+                Add Task
+              </MenuItem>
             </Menu>
           </SidebarContent>
           <SidebarFooter>
             <Menu iconShape="square">
               {user.loggedin ? (
-                <MenuItem
-                  icon={<FiLogOut />}
-                  onClick={() => {
-                    localStorage.removeItem("TodoUser");
-                    dispatch(logOutUser());
-                  }}
-                >
-                  Logout
-                </MenuItem>
+                <>
+                  <MenuItem
+                    icon={<FiLogOut />}
+                    onClick={() => {
+                      localStorage.removeItem("TodoUser");
+                      dispatch(logOutUser());
+                    }}
+                  >
+                    Logout
+                  </MenuItem>
+                  <p style={{ color: "gray", fontSize: "12px" }}>
+                    Copyright @ Nayan, 2022
+                  </p>
+                </>
               ) : (
-                <MenuItem icon={<FiLogIn />} onClick={() => navigate("/login")}>
-                  Login
-                </MenuItem>
+                <>
+                  <MenuItem
+                    icon={<FiLogIn />}
+                    onClick={() => navigate("/login")}
+                  >
+                    Login
+                  </MenuItem>
+                  <p style={{ color: "gray", fontSize: "12px" }}>
+                    Copyright @ Nayan, 2022
+                  </p>
+                </>
               )}
             </Menu>
           </SidebarFooter>

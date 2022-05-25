@@ -43,7 +43,7 @@ const MySignup = () => {
       setFormData({});
       setTimeout(() => {
         navigate("/login");
-      }, 3000);
+      }, 1500);
     }
   };
 

@@ -1,6 +1,8 @@
 import "./TodoCard.css";
 
 import * as React from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { getData } from "../../Redux/Todo/action";
 import {
   Box,
   Card,
@@ -14,7 +16,34 @@ import {
   IconButton,
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
+
 const TodoCard = ({ todo }) => {
+  const dispatch = useDispatch();
+
+  const user = useSelector((state) => state.user);
+
+  const { title, description, subTasks, status, tags, date, id } = todo;
+
+  const { Personal, Official, Others } = tags;
+
+  function makeUpdateRequest(payload) {
+    fetch(`http://localhost:8080/todos/${id}`, {
+      method: "PATCH",
+      body: JSON.stringify(payload),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then(() => dispatch(getData(user.user.email)));
+  }
+
+  const handleDelet = (todoId) => {
+    fetch(`http://localhost:8080/todos/${todoId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then(() => dispatch(getData(user.user.email)));
+  };
   return (
     <>
       <Card
@@ -24,16 +53,24 @@ const TodoCard = ({ todo }) => {
           padding: "10px",
           position: "relative",
         }}
-        key={todo.id}
+        key={id}
       >
         <CardContent>
           <Typography variant="h5" color="text.secondary" gutterBottom>
-            {todo.title}
+            {title}
+          </Typography>
+          <Typography
+            variant="p"
+            color="text.secondary"
+            gutterBottom
+            sx={{ fontSize: 14 }}
+          >
+            {date.split("-").reverse().join("/")}
           </Typography>
           <Typography variant="body2" sx={{ fontSize: 10, mb: 1, mt: 0 }}>
-            {todo.status == "todo" ? (
+            {status == "todo" ? (
               <Button color="secondary">Todo</Button>
-            ) : todo.status == "progress" ? (
+            ) : status == "progress" ? (
               <Button color="warning">In Progress</Button>
             ) : (
               <Button color="success">Done</Button>
@@ -41,31 +78,77 @@ const TodoCard = ({ todo }) => {
             <br />
           </Typography>
           <Typography sx={{ fontSize: 20 }} component="div">
-            {todo.tags.map((tag) => (
+            {Official && (
               <Chip
                 variant="outlined"
                 color="secondary"
-                avatar={<Avatar>{tag[0]}</Avatar>}
-                label={tag}
+                avatar={<Avatar>O</Avatar>}
+                label="Official"
                 sx={{ mr: 1.5, mt: 1 }}
               />
-            ))}
+            )}
+            {Personal && (
+              <Chip
+                variant="outlined"
+                color="secondary"
+                avatar={<Avatar>P</Avatar>}
+                label="Personal"
+                sx={{ mr: 1.5, mt: 1 }}
+              />
+            )}
+            {Others && (
+              <Chip
+                variant="outlined"
+                color="secondary"
+                avatar={<Avatar>O</Avatar>}
+                label="Others"
+                sx={{ mr: 1.5, mt: 1 }}
+              />
+            )}
           </Typography>
           <Typography sx={{ mb: 1.5 }} color="text.secondary">
             {}
           </Typography>
           <Typography variant="body1" sx={{ mt: 1.5, mb: 1.5 }}>
-            {todo.description}
+            {description}
             <br />
           </Typography>
           <Typography variant="body1">
             Sub Tasks :
-            {todo.subTasks.map((st) => (
+            {subTasks.map((st) => (
               <Box component="div" display="flex" alignItems="center">
-                <Checkbox />
-                <Typography component="p">{st.title}</Typography>
+                <Checkbox
+                  sx={{ mr: 1 }}
+                  checked={st.status}
+                  onChange={(e) => {
+                    const taskAfterToggle = subTasks.map((item) =>
+                      item.id === st.id
+                        ? { ...st, status: e.target.checked }
+                        : item
+                    );
+                    const payload = {
+                      subTasks: taskAfterToggle,
+                    };
+                    makeUpdateRequest(payload);
+                  }}
+                />
+                <Typography component="p" sx={{ mr: 1 }}>
+                  {st.title}
+                </Typography>
                 <IconButton aria-label="delete">
-                  <DeleteIcon color="error" />
+                  <DeleteIcon
+                    color="error"
+                    onClick={(e) => {
+                      const taskAfterDelet = subTasks.filter(
+                        (item) => item.id !== st.id
+                      );
+
+                      const payload = {
+                        subTasks: taskAfterDelet,
+                      };
+                      makeUpdateRequest(payload);
+                    }}
+                  />
                 </IconButton>
               </Box>
             ))}
@@ -75,12 +158,14 @@ const TodoCard = ({ todo }) => {
             variant="body1"
             sx={{ mt: 1.5, position: "absolute", bottom: 15, right: 15 }}
           >
-            <Button size="small" variant="contained" color="primary">
-              Edit{" "}
+            <Button
+              size="small"
+              variant="contained"
+              color="error"
+              onClick={() => handleDelet(id)}
+            >
+              Delete{" "}
             </Button>{" "}
-            <IconButton aria-label="delete">
-              <DeleteIcon color="error"/>
-            </IconButton>
           </Typography>
         </CardContent>
       </Card>
