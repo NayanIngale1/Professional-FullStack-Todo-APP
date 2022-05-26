@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useReducer } from "react";
 import { v4 as uuid } from "uuid";
+import axios from "axios";
 import "./NewTask.css";
 import { SnackbarProvider, useSnackbar } from "notistack";
 import {
@@ -74,7 +75,8 @@ const MyNewTask = () => {
 
   const { Official, Personal, Others } = tags;
 
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.user.users);
+  
 
   const createNewTask = () => {
     if (state.title.trim().length === 0) {
@@ -88,20 +90,35 @@ const MyNewTask = () => {
     } else {
       const payload = {
         ...state,
-        username: user.user.email,
+        username: user.email,
       };
-      fetch("http://localhost:8080/todos", {
+      
+      const response = fetch("https://nayan-todo-app.herokuapp.com/todo/post", {
         method: "POST",
-        body: JSON.stringify(payload),
-        headers: { "Content-Type": "application/json" },
-      })
-        .then(() => dispatch(getData(user.user.email)))
-        .then(() => localDispatch({ type: "RESET" }))
-        .then((res) =>
+        headers: {
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*"          
+        },
+        body: JSON.stringify(payload)
+      }).then((res)=>res.json());
+      
+      
+      response
+        .then((res) => {
+          //   res.json();
+          // console.log(res);
+          res.error && enqueueSnackbar(error, {
+            variant: "error",
+          })
+          dispatch(getData(user.email));
+
+           localDispatch({ type: "RESET" });
+          res.status &&  
           enqueueSnackbar("New Todo Creates Successfully", {
             variant: "success",
           })
-        );
+        });
+    
     }
   };
 

@@ -20,29 +20,29 @@ import DeleteIcon from "@mui/icons-material/Delete";
 const TodoCard = ({ todo }) => {
   const dispatch = useDispatch();
 
-  const user = useSelector((state) => state.user);
+  const user = useSelector((state) => state.user.user.users);
 
-  const { title, description, subTasks, status, tags, date, id } = todo;
+  const { title, description, subTasks, status, tags, date, _id } = todo;
 
   const { Personal, Official, Others } = tags;
 
   function makeUpdateRequest(payload) {
-    fetch(`http://localhost:8080/todos/${id}`, {
+    fetch(`https://nayan-todo-app.herokuapp.com/todo/${_id}`, {
       method: "PATCH",
       body: JSON.stringify(payload),
       headers: {
         "Content-Type": "application/json",
       },
-    }).then(() => dispatch(getData(user.user.email)));
+    }).then(() => dispatch(getData(user.email)));
   }
 
   const handleDelet = (todoId) => {
-    fetch(`http://localhost:8080/todos/${todoId}`, {
+    fetch(`https://nayan-todo-app.herokuapp.com/todo/${todoId}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
       },
-    }).then(() => dispatch(getData(user.user.email)));
+    }).then(() => dispatch(getData(user.email)));
   };
   return (
     <>
@@ -53,7 +53,7 @@ const TodoCard = ({ todo }) => {
           padding: "10px",
           position: "relative",
         }}
-        key={id}
+        key={_id}
       >
         <CardContent>
           <Typography variant="h5" color="text.secondary" gutterBottom>
@@ -122,7 +122,7 @@ const TodoCard = ({ todo }) => {
                   checked={st.status}
                   onChange={(e) => {
                     const taskAfterToggle = subTasks.map((item) =>
-                      item.id === st.id
+                      item._id === st._id
                         ? { ...st, status: e.target.checked }
                         : item
                     );
@@ -140,7 +140,7 @@ const TodoCard = ({ todo }) => {
                     color="error"
                     onClick={(e) => {
                       const taskAfterDelet = subTasks.filter(
-                        (item) => item.id !== st.id
+                        (item) => item._id !== st._id
                       );
 
                       const payload = {
@@ -162,7 +162,7 @@ const TodoCard = ({ todo }) => {
               size="small"
               variant="contained"
               color="error"
-              onClick={() => handleDelet(id)}
+              onClick={() => handleDelet(_id)}
             >
               Delete{" "}
             </Button>{" "}

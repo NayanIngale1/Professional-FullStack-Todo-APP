@@ -22,24 +22,27 @@ const MySignup = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    let res = await fetch(
-      `https://masai-api-mocker.herokuapp.com/auth/register`,
-      {
-        method: "POST",
-        body: JSON.stringify(formData),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    ).then((res) => res.json());
+    if (formData.password !== formData.confirmPassword) {
+      enqueueSnackbar("Password and Confirm password not matched", { variant: "error" });
+      return;
+    }
 
-    // console.log("res:", res);
+    let res = await fetch(`https://nayan-todo-app.herokuapp.com/register`, {
+      method: "POST",
+      body: JSON.stringify(formData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }).then((res) => res.json());
+  
 
-    res.error
+    console.log("res:", res);
+
+    res.errors
       ? enqueueSnackbar(res.message, { variant: "error" })
       : enqueueSnackbar(res.message, { variant: "success" });
 
-    if (!res.error) {
+    if (!res.errors) {
       setFormData({});
       setTimeout(() => {
         navigate("/login");
@@ -75,15 +78,17 @@ const MySignup = () => {
             label="Enter Password"
             variant="outlined"
             size="small"
+            type="password"
             name="password"
             onChange={(e) => handleChange(e)}
           />
           <TextField
             id="outlined-basic"
-            label="Enter Username"
+            label="Confirm Password"
             variant="outlined"
             size="small"
-            name="username"
+            type="password"
+            name="confirmPassword"
             onChange={(e) => handleChange(e)}
           />
           <TextField
@@ -94,15 +99,7 @@ const MySignup = () => {
             name="mobile"
             type="number"
             onChange={(e) => handleChange(e)}
-          />
-          <TextField
-            id="outlined-basic"
-            label="Enter Description"
-            variant="outlined"
-            size="small"
-            name="description"
-            onChange={(e) => handleChange(e)}
-          />
+          />   
 
           <Button variant="contained" onClick={(e) => handleSubmit(e)}>
             {" "}

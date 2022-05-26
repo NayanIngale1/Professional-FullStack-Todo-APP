@@ -53,6 +53,7 @@ const Sidebar = () => {
 
   const navigate = useNavigate();
   const user = useSelector((state) => state.user);
+
   const dispatch = useDispatch();
 
   // console.log("user:", user);
@@ -66,7 +67,7 @@ const Sidebar = () => {
             <div className="logotext">
               {/* small and big change using menucollapse state */}
               {user.loggedin ? (
-                <p>{user.user.name} </p>
+                <p>{user.user.users.name} </p>
               ) : (
                 <p>{menuCollapse ? "TODO" : "TODO APP"}</p>
               )}

@@ -9,7 +9,6 @@ import Loading from "./Loading";
 const Home = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
-
   const allTodos = useSelector((state) => state.todo);
   const { loading } = allTodos;
 
@@ -25,16 +24,15 @@ const Home = () => {
     let user = JSON.parse(localStorage.getItem("TodoUser"));
     if (user) {
       dispatch(addUser(user));
-    }
-
-    dispatch(getData(user.email));
+    }    
+    dispatch(getData(user.users.email));
   }, []);
 
   return (
     <>
       <Loading />
       <div>
-        <h1>Welcome To Home {user?.user?.name?.split(" ")[0]} </h1>
+        <h1>Welcome To Home {user?.user?.users?.name?.split(" ")[0]} </h1>
       </div>
       {loading == false && user.loggedin && (
         <>

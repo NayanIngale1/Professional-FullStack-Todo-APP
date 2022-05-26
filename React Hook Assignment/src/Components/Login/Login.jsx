@@ -29,15 +29,22 @@ const MyLogin = () => {
 
     // console.log(formData);
 
-    let res = await fetch("https://masai-api-mocker.herokuapp.com/auth/login", {
+    let res = await fetch("https://nayan-todo-app.herokuapp.com/login", {
       method: "POST",
       body: JSON.stringify(formData),
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => res.json());
+    })
+      .then((res) => res.json())
+      
+    
+    if (res.errors) {
+      enqueueSnackbar(res.message, { variant: "error" });
+      return;
+    }
 
-    // console.log("res:", res);
+    console.log("res:", res);
 
     if (res.token) {
       let token = res.token;
@@ -45,20 +52,19 @@ const MyLogin = () => {
       dispatch(addToken(token));
 
       let data = await fetch(
-        `https://masai-api-mocker.herokuapp.com/user/${formData.username}`,
+        `https://nayan-todo-app.herokuapp.com/user/${res.user._id}`,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
         }
       ).then((res) => res.json());
 
-      // console.log("data:", data);
+      
       if (!data.error) {
         setFormData({});
 
-        enqueueSnackbar(`Welcome ${data.name}`, { variant: "success" });
+        enqueueSnackbar(`Welcome ${data.users.name}`, { variant: "success" });
         setTimeout(() => {
           dispatch(addUser(data));
           localStorage.setItem("TodoUser", JSON.stringify(data));
@@ -79,10 +85,10 @@ const MyLogin = () => {
           </Typography>
           <TextField
             id="outlined-basic"
-            label="Enter Username"
+            label="Enter Email"
             variant="outlined"
             size="small"
-            name="username"
+            name="email"
             onChange={(e) => handleChange(e)}
           />
 
@@ -91,6 +97,7 @@ const MyLogin = () => {
             label="Enter Password"
             variant="outlined"
             size="small"
+            type="password"
             name="password"
             onChange={(e) => handleChange(e)}
           />
