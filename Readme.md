@@ -1,6 +1,6 @@
 # **Full Stack Todo Application**
 
-_Hello Evenryone..._
+_Hello Everyone..._
 <br/>
 _Here I am sharing some information about the TODO APP which I build<br>
 using `React, Redux, Material UI, Express, MongoDB, Node JS, CSS`.<br/>If you Want to try then Go to the link Below...<br/>_
